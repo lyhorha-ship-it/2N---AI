@@ -3,4 +3,3 @@ edge-tts
 moviepy==1.0.3
 pydub
 google-generativeai
-pyaudioop
