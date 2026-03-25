@@ -26,28 +26,30 @@ import subprocess
 
 
 
-# --- កូដថ្មីសម្រាប់ស្វែងរក FFmpeg ឱ្យដើរទាំងលើ Web និង Mac ---
 
+# ១. ស្វែងរកផ្លូវទៅកាន់ ffmpeg និង ffprobe ដោយស្វ័យប្រវត្តិ
+ffmpeg_bin = shutil.which("ffmpeg")
+ffprobe_bin = shutil.which("ffprobe")
 
-import shutil
-import os
-
-# បង្ខំឱ្យ Pydub ស្វែងរក FFmpeg ក្នុង System
-ffmpeg_path = shutil.which("ffmpeg")
-ffprobe_path = shutil.which("ffprobe")
-
-if ffmpeg_path:
-    AudioSegment.converter = ffmpeg_path
-    AudioSegment.ffprobe = ffprobe_path
-else:
-    # បើរកមិនឃើញក្នុង System (ករណីលើ Mac របស់អ្នក)
+# ២. ប្រសិនបើរកមិនឃើញតាមរយៈ shutil យើងកំណត់វាដោយផ្ទាល់ (សម្រាប់ Mac Homebrew)
+if not ffmpeg_bin:
+    # សម្រាប់ Mac Chip M1/M2/M3
     if os.path.exists("/opt/homebrew/bin/ffmpeg"):
-        AudioSegment.converter = "/opt/homebrew/bin/ffmpeg"
-        AudioSegment.ffprobe = "/opt/homebrew/bin/ffprobe"
-    else:
-        st.error("❌ រកមិនឃើញ FFmpeg ទេ។ សូមប្រាកដថាអ្នកមាន File 'packages.txt' ក្នុង GitHub!")
+        ffmpeg_bin = "/opt/homebrew/bin/ffmpeg"
+        ffprobe_bin = "/opt/homebrew/bin/ffprobe"
+    # សម្រាប់ Mac Chip Intel
+    elif os.path.exists("/usr/local/bin/ffmpeg"):
+        ffmpeg_bin = "/usr/local/bin/ffmpeg"
+        ffprobe_bin = "/usr/local/bin/ffprobe"
 
-# --- ១. ការកំណត់សុវត្ថិភាព (Login System) ---
+# ៣. បង្ខំឱ្យ Pydub ប្រើប្រាស់ផ្លូវដែលរកឃើញ
+if ffmpeg_bin and ffprobe_bin:
+    AudioSegment.converter = ffmpeg_bin
+    AudioSegment.ffprobe = ffprobe_bin
+    # បន្ថែមទៅក្នុង System Path របស់ដំណើរការនេះ
+    os.environ["PATH"] += os.pathsep + os.path.dirname(ffmpeg_bin)
+else:
+    st.error("❌ រកមិនឃើញ FFmpeg ទេ។ សូមដំឡើងវាដោយប្រើ 'brew install ffmpeg' ក្នុង Terminal!")
 
 
 # --- ១. កូដសម្រាប់គ្រប់គ្រង Session (ដូចមុន) ---
@@ -613,3 +615,20 @@ with col2:
                     mime="video/mp4"
                 )
                 # --- ដាក់នៅក្រោមបង្អស់នៃ File ---
+st.markdown("---")
+if st.button("🔄 សម្អាតទិន្នន័យ និងចាប់ផ្ដើមថ្មី", type="secondary", use_container_width=True):
+    # ១. លុបទិន្នន័យក្នុង Session State
+    st.session_state['subs'] = []
+    st.session_state['video_ready'] = False
+    
+    # ២. លុប Widget State (ធ្វើឱ្យ Col 1 បាត់អក្សរដែលអ្នកធ្លាប់កែ)
+    if "my_editor" in st.session_state:
+        del st.session_state["my_editor"]
+        
+    # ៣. លុប File វីដេអូចាស់
+    if os.path.exists("uploaded_video.mp4"):
+        os.remove("uploaded_video.mp4")
+        
+    st.toast("🧹 សម្អាតរួចរាល់!", icon="✨")
+    st.rerun() # Refresh UI ឱ្យត្រឡប់ទៅដើមវិញ
+
