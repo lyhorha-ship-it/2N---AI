@@ -14,6 +14,12 @@ import shutil
 from pydub import AudioSegment
 import moviepy as mp
 import subprocess
+import sys
+try:
+    import audioop
+except ImportError:
+    import pyaudioop as audioop
+    sys.modules['audioop'] = audioop
 
 
 
