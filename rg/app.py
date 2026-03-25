@@ -1,9 +1,3 @@
-import sys
-try:
-    import audioop
-except ImportError:
-    import pyaudioop as audioop
-    sys.modules['audioop'] = audioop
 
 import streamlit as st
 import asyncio
