@@ -613,19 +613,3 @@ with col2:
                     mime="video/mp4"
                 )
                 # --- ដាក់នៅក្រោមបង្អស់នៃ File ---
-st.markdown("---")
-if st.button("🔄 សម្អាតទិន្នន័យ និងចាប់ផ្ដើមថ្មី", type="secondary", use_container_width=True):
-    # ១. លុបទិន្នន័យក្នុង Session State
-    st.session_state['subs'] = []
-    st.session_state['video_ready'] = False
-    
-    # ២. លុប Widget State (ធ្វើឱ្យ Col 1 បាត់អក្សរដែលអ្នកធ្លាប់កែ)
-    if "my_editor" in st.session_state:
-        del st.session_state["my_editor"]
-        
-    # ៣. លុប File វីដេអូចាស់
-    if os.path.exists("uploaded_video.mp4"):
-        os.remove("uploaded_video.mp4")
-        
-    st.toast("🧹 សម្អាតរួចរាល់!", icon="✨")
-    st.rerun() # Refresh UI ឱ្យត្រឡប់ទៅដើមវិញ
