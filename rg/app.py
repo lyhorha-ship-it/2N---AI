@@ -29,14 +29,18 @@ import subprocess
 # --- កូដថ្មីសម្រាប់ស្វែងរក FFmpeg ឱ្យដើរទាំងលើ Web និង Mac ---
 
 
-ffmpeg_bin = shutil.which("ffmpeg")
-ffprobe_bin = shutil.which("ffprobe")
+import shutil
+import os
 
-if ffmpeg_bin:
-    AudioSegment.converter = ffmpeg_bin
-    AudioSegment.ffprobe = ffprobe_bin
+# បង្ខំឱ្យ Pydub ស្វែងរក FFmpeg ក្នុង System
+ffmpeg_path = shutil.which("ffmpeg")
+ffprobe_path = shutil.which("ffprobe")
+
+if ffmpeg_path:
+    AudioSegment.converter = ffmpeg_path
+    AudioSegment.ffprobe = ffprobe_path
 else:
-    # សម្រាប់ម៉ាស៊ីន Mac របស់អ្នកផ្ទាល់ (Local Test)
+    # បើរកមិនឃើញក្នុង System (ករណីលើ Mac របស់អ្នក)
     if os.path.exists("/opt/homebrew/bin/ffmpeg"):
         AudioSegment.converter = "/opt/homebrew/bin/ffmpeg"
         AudioSegment.ffprobe = "/opt/homebrew/bin/ffprobe"
