@@ -25,29 +25,22 @@ import subprocess
 
 
 
-# ១. ស្វែងរកផ្លូវទៅកាន់ ffmpeg និង ffprobe ដោយស្វ័យប្រវត្តិ
+# --- កូដថ្មីសម្រាប់ស្វែងរក FFmpeg ឱ្យដើរទាំងលើ Web និង Mac ---
+
+
 ffmpeg_bin = shutil.which("ffmpeg")
 ffprobe_bin = shutil.which("ffprobe")
 
-# ២. ប្រសិនបើរកមិនឃើញតាមរយៈ shutil យើងកំណត់វាដោយផ្ទាល់ (សម្រាប់ Mac Homebrew)
-if not ffmpeg_bin:
-    # សម្រាប់ Mac Chip M1/M2/M3
-    if os.path.exists("/opt/homebrew/bin/ffmpeg"):
-        ffmpeg_bin = "/opt/homebrew/bin/ffmpeg"
-        ffprobe_bin = "/opt/homebrew/bin/ffprobe"
-    # សម្រាប់ Mac Chip Intel
-    elif os.path.exists("/usr/local/bin/ffmpeg"):
-        ffmpeg_bin = "/usr/local/bin/ffmpeg"
-        ffprobe_bin = "/usr/local/bin/ffprobe"
-
-# ៣. បង្ខំឱ្យ Pydub ប្រើប្រាស់ផ្លូវដែលរកឃើញ
-if ffmpeg_bin and ffprobe_bin:
+if ffmpeg_bin:
     AudioSegment.converter = ffmpeg_bin
     AudioSegment.ffprobe = ffprobe_bin
-    # បន្ថែមទៅក្នុង System Path របស់ដំណើរការនេះ
-    os.environ["PATH"] += os.pathsep + os.path.dirname(ffmpeg_bin)
 else:
-    st.error("❌ រកមិនឃើញ FFmpeg ទេ។ សូមដំឡើងវាដោយប្រើ 'brew install ffmpeg' ក្នុង Terminal!")
+    # សម្រាប់ម៉ាស៊ីន Mac របស់អ្នកផ្ទាល់ (Local Test)
+    if os.path.exists("/opt/homebrew/bin/ffmpeg"):
+        AudioSegment.converter = "/opt/homebrew/bin/ffmpeg"
+        AudioSegment.ffprobe = "/opt/homebrew/bin/ffprobe"
+    else:
+        st.error("❌ រកមិនឃើញ FFmpeg ទេ។ សូមប្រាកដថាអ្នកមាន File 'packages.txt' ក្នុង GitHub!")
 
 # --- ១. ការកំណត់សុវត្ថិភាព (Login System) ---
 
